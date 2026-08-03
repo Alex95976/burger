@@ -1,3 +1,7 @@
 requests
 binance-futures-connector
 urllib3
+pandas
+numpy
+ta
+aiohttp
