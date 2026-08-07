@@ -3,4 +3,4 @@ pandas
 ta
 Flask
 gunicorn
-requests
+requests # local_consumer.py-д хэрэгтэй тул байж болно
