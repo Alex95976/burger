@@ -1,7 +1,6 @@
-requests
-binance-futures-connector
-urllib3
+python-binance
 pandas
-numpy
 ta
-aiohttp
+Flask
+gunicorn
+requests
