@@ -1,14 +1,25 @@
 import pandas as pd
 from binance.um_futures import UMFutures
 from ta.momentum import RSIIndicator
-
 from collections import deque
-def get_rsi_data(client, symbol): # --- ЗАСВАР: client параметрийг нэмэх ---
+
+def _get_standalone_client():
+    """
+    Зөвхөн RSI тооцоолоход зориулсан, нийтийн API ашигладаг,
+    дангаараа ажиллах Binance client үүсгэнэ.
+    """
+    client = UMFutures()
+    # Сүлжээнээс болж гацахаас сэргийлж timeout тохируулах
+    client.session.requests_params = {"timeout": 10}
+    return client
+
+def get_rsi_data(symbol): # --- ЗАСВАР: client параметрийг хасаж, дангаар нь ажилладаг болгох ---
     """
     Нэг зоосны RSI-тай холбоотой бүх мэдээллийг тооцоолж,
     нэгдсэн dictionary хэлбэрээр буцаана.
     """
     try:
+        client = _get_standalone_client() # --- ШИНЭ: Client-г дотроо үүсгэнэ ---
         # Бүх тооцоололд хангалттай дата хэрэгтэй тул limit-г 200 болгоно
         klines = client.klines(symbol=symbol, interval="1m", limit=200)
         if not klines or len(klines) < 50:
