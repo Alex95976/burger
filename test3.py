@@ -24,8 +24,7 @@ def get_last_4_ohlc(symbol):
             print(f"Warning: {symbol}-н хувьд хангалттай лааны мэдээлэл олдсонгүй.")
             return None
 
-        # RSI, MACD шиг -3, -2, -1, 0 түлхүүрээр холбох
-        index_keys = ["-3", "-2", "-1", "0"]
+        index_keys = ["0", "-1", "-2", "3"]
         ohlc_dict = {}
         ohlc_list_for_df = []
 
