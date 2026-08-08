@@ -22,8 +22,8 @@ def get_trade_conditions(symbol, ohlc_data, macd_data, rsi_data):
         previous_state = conditions_state[symbol]
 
         # Шаардлагатай хувьсагчдыг задлах
-        open0 = ohlc_data["ohlc_list"][0]["open"]
-        open1 = ohlc_data["ohlc_list"][1]["open"]
+        open0 = ohlc_data["ohlc_list"][-1]["open"] # Хамгийн сүүлийн лаа (индекс 0)
+        open1 = ohlc_data["ohlc_list"][-2]["open"] # Өмнөх лаа (индекс -1)
 
         # 3. Одоогийн төлөвийг тооцоолох
         current_open_up = open0 > open1
