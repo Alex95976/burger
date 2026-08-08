@@ -24,7 +24,8 @@ def get_last_4_ohlc(symbol):
             print(f"Warning: {symbol}-н хувьд хангалттай лааны мэдээлэл олдсонгүй.")
             return None
 
-        index_keys = ["0", "-1", "-2", "3"]
+        # --- ЗАСВАР: Логик дараалалтай, ойлгомжтой түлхүүр ашиглах ---
+        index_keys = ["-3", "-2", "-1", "0"]
         ohlc_dict = {}
         ohlc_list_for_df = []
 
