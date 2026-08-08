@@ -25,12 +25,14 @@ def get_last_4_ohlc(symbol): # --- ЗАСВАР: client параметрийг �
             return None
 
         ohlc_data = []
-        for kline in reversed(klines): # Сүүлийн лаанаас эхлэх
+        # --- ЗАСВАР: enumerate ашиглан лаа бүрд ID (дугаар) оноох ---
+        for i, kline in enumerate(reversed(klines)): # Сүүлийн лаанаас эхлэх
             ohlc_data.append({
+                "id": i, # --- ШИНЭ: 0-с эхэлсэн дугаар (0 = одоогийн лаа) ---
                 "open": float(kline[1]),
                 "high": float(kline[2]),
                 "low": float(kline[3]),
-                "close": float(kline[4])
+                "close": float(kline[4]),
             })
 
         # Min/Max утгуудыг тооцоолох
