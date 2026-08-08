@@ -7,42 +7,49 @@ def _get_standalone_client():
     дангаараа ажиллах Binance client үүсгэнэ.
     """
     client = UMFutures()
-    # Сүлжээнээс болж гацахаас сэргийлж timeout тохируулах
     client.session.requests_params = {"timeout": 10}
     return client
 
-def get_last_4_ohlc(symbol): # --- ЗАСВАР: client параметрийг хасаж, бие даасан болгох ---
+def get_last_4_ohlc(symbol):
     """
     Тухайн зоосны сүүлийн 4 лааны OHLC мэдээллийг татаж,
-    нэгтгэсэн dictionary хэлбэрээр буцаана.
+    -3, -2, -1, 0 гэсэн индекс бүхий dictionary хэлбэрээр буцаана.
     """
     try:
-        client = _get_standalone_client() # --- ШИНЭ: Client-г дотроо үүсгэнэ ---
-        # Сүүлийн 4 лааны мэдээллийг авах
+        client = _get_standalone_client()
+        # Binance-аас сүүлийн 4 лааны мэдээллийг татах
+        # (klines[0] = хамгийн хуучин, klines[3] = хамгийн шинэ/одоогийн)
         klines = client.klines(symbol=symbol, interval="1m", limit=4)
         if not klines or len(klines) < 4:
             print(f"Warning: {symbol}-н хувьд хангалттай лааны мэдээлэл олдсонгүй.")
             return None
 
-        ohlc_data = []
-        # --- ЗАСВАР: enumerate ашиглан лаа бүрд ID (дугаар) оноох ---
-        for i, kline in enumerate(reversed(klines)): # Сүүлийн лаанаас эхлэх
-            ohlc_data.append({
-                "id": i, # --- ШИНЭ: 0-с эхэлсэн дугаар (0 = одоогийн лаа) ---
+        # RSI, MACD шиг -3, -2, -1, 0 түлхүүрээр холбох
+        index_keys = ["-3", "-2", "-1", "0"]
+        ohlc_dict = {}
+        ohlc_list_for_df = []
+
+        for i in range(4):
+            kline = klines[i]
+            idx_key = index_keys[i]
+            
+            candle_data = {
                 "open": float(kline[1]),
                 "high": float(kline[2]),
                 "low": float(kline[3]),
-                "close": float(kline[4]),
-            })
+                "close": float(kline[4])
+            }
+            
+            # Дикшнри болон жагсаалтад зэрэг нэмэх
+            ohlc_dict[idx_key] = candle_data
+            ohlc_list_for_df.append(candle_data)
 
-        # Min/Max утгуудыг тооцоолох
-        # --- ЗАСВАР: DataFrame-г ID-гаар нь эрэмбэлэх ---
-        # Ингэснээр min(), max() функцүүд зөв дарааллаар ажиллана.
-        # (id=0 нь хамгийн сүүлийн лаа, id=3 нь хамгийн эртний лаа)
-        df = pd.DataFrame(ohlc_data).sort_values(by='id')
-
+        # Min/Max утгуудыг тооцоолох DataFrame
+        df = pd.DataFrame(ohlc_list_for_df)
+        
         return {
-            "ohlc_list": ohlc_data,
+            "candles": ohlc_dict,         # "-3", "-2", "-1", "0" гэсэн түлхүүрүүдтэй
+            "ohlc_list": ohlc_list_for_df,  # Эрэмбэлэгдсэн жагсаалт
             "min_open": df['open'].min(),
             "max_open": df['open'].max(),
             "min_close": df['close'].min(),
