@@ -7,6 +7,8 @@ def get_trade_conditions(ohlc_data, macd_data, rsi_data):
     result = {
         "open_up": False,
         "open_down": False,
+        "open_up_limit": False,
+        "open_down_limit": False,
         "error": None
     }
 
@@ -18,10 +20,14 @@ def get_trade_conditions(ohlc_data, macd_data, rsi_data):
         # `open_trend`-г тооцоолох
         if open0 > open1:
             result["open_up"] = True
+            result["open_up_limit"] = ohlc_data["min_open"]
             result["open_down"] = False
+            result["open_down_limit"] = False
         elif open0 < open1:
             result["open_down"] = True
+            result["open_down_limit"] = ohlc_data["max_open"]
             result["open_up"] = False
+            result["open_up_limit"] = False
         # Хэрэв open0 == open1 бол хоёулаа False хэвээр үлдэнэ.
 
     except (KeyError, IndexError, TypeError) as e:
