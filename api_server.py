@@ -92,7 +92,7 @@ def serve_trade_conditions():
         return jsonify({"error": f"Could not fetch required data for {symbol}. Missing: {', '.join(missing)}"}), 404
 
     # 2. test4.py доторх функц рүү датаг дамжуулж, нөхцөл тооцоолох
-    conditions = get_trade_conditions(ohlc_data, macd_data, rsi_data)
+    conditions = get_trade_conditions(symbol, ohlc_data, macd_data, rsi_data)
 
     return jsonify(conditions)
 
