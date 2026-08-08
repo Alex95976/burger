@@ -36,7 +36,11 @@ def get_last_4_ohlc(symbol): # --- ЗАСВАР: client параметрийг �
             })
 
         # Min/Max утгуудыг тооцоолох
-        df = pd.DataFrame(ohlc_data)
+        # --- ЗАСВАР: DataFrame-г ID-гаар нь эрэмбэлэх ---
+        # Ингэснээр min(), max() функцүүд зөв дарааллаар ажиллана.
+        # (id=0 нь хамгийн сүүлийн лаа, id=3 нь хамгийн эртний лаа)
+        df = pd.DataFrame(ohlc_data).sort_values(by='id')
+
         return {
             "ohlc_list": ohlc_data,
             "min_open": df['open'].min(),
