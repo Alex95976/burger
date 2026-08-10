@@ -20,8 +20,8 @@ def get_rsi_data(symbol): # --- ЗАСВАР: client параметрийг ха
     """
     try:
         client = _get_standalone_client() # --- ШИНЭ: Client-г дотроо үүсгэнэ ---
-        # Бүх тооцоололд хангалттай дата хэрэгтэй тул limit-г 200 болгоно
-        klines = client.klines(symbol=symbol, interval="1m", limit=200)
+        # Бүх тооцоололд хангалттай дата хэрэгтэй тул limit-г 300 болгоно
+        klines = client.klines(symbol=symbol, interval="1m", limit=300)
         if not klines or len(klines) < 50:
             print(f"Warning: Not enough kline data for {symbol} to calculate RSI.")
             return None
