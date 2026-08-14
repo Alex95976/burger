@@ -1,10 +1,9 @@
 import os
 from flask import Flask, jsonify, request
-# from aaa_client import get_client # --- ХАСАХ: Энэ файл одоо хэрэггүй ---
-from test import get_rsi_data # test.py нь одоо дангаараа ажиллана
-from test2 import get_macd # ШИНЭ: test2.py-аас MACD функцийг импортлох
-from test3 import get_last_4_ohlc # ШИНЭ: test3.py-аас OHLC функцийг импортлох
-from test4 import get_trade_conditions # ШИНЭ: test4.py-аас нөхцөл шалгах функцийг импортлох
+from data_rsi import get_rsi_data # test.py нь одоо дангаараа ажиллана
+from data_macd import get_macd # ШИНЭ: test2.py-аас MACD функцийг импортлох
+from data_ohlc import get_last_4_ohlc # ШИНЭ: test3.py-аас OHLC функцийг импортлох
+from data_condition import get_trade_conditions # ШИНЭ: test4.py-аас нөхцөл шалгах функцийг импортлох
 
 # Flask аппликэйшн үүсгэх
 app = Flask(__name__)
