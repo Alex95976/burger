@@ -8,7 +8,7 @@ from data_ohlc import get_last_4_ohlc # ШИНЭ: test3.py-аас OHLC функ�
 from data_condition import get_trade_conditions # ШИНЭ: test4.py-аас нөхцөл шалгах функцийг импортлох
 
 # ШИНЭ: data_percent2-оос шаардлагатай функц болон клиент авах
-from client2 import get_client
+from client import get_client
 from data_percent2 import initialize_baseline, get_percent_change, get_top_gainers_n, get_top_losers_n
 
 # Flask аппликэйшн үүсгэх
