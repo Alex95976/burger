@@ -20,8 +20,8 @@ def read_baseline_json():
 
 def initialize_baseline(client):
     """
-    Стратегийн гол цөм: MACD 0-ийн огтлолцлоос олдох macd_initial_price-ийг 
-    baseline болгож авна. Олдохгүй бол бодит ticker үнээр fallback хийнэ.
+    Зөвхөн MACD 0-ийн огтлолцлоос олдох initial price-ийг авна. 
+    Олдохгүй бол шууд алгасна.
     """
     baseline = {}
     exchange_info = client.exchange_info()
@@ -36,24 +36,16 @@ def initialize_baseline(client):
         )
     ]
 
-    # Биржийн одоогийн бүх үнийг нэг удаа татаж бэлтгэнэ (Fallback-д ашиглах зорилгоор)
-    tickers = {t["symbol"]: float(t["price"]) for t in client.ticker_price()}
-
     total_coins = len(valid_symbols)
     print(f"🔄 Нийт {total_coins} зоосны MACD Initial Price baseline-ийг үүсгэж байна...\n")
 
     for i, symbol in enumerate(valid_symbols, 1):
         print(f"[{i}/{total_coins}] Шалгаж байна: {symbol:<12}", end="\r")
         
-        # 1. Эхлээд MACD initial price-ийг татаж үзнэ
         init_price = get_initial_price(symbol)
         
         if init_price is not None and init_price > 0:
             baseline[symbol] = init_price
-        else:
-            # 2. Хэрэв MACD дээр олдохгүй бол зах зээлийн бодит ticker үнийг fallback болгож авна
-            if symbol in tickers:
-                baseline[symbol] = tickers[symbol]
         
         time.sleep(0.05)
 
@@ -65,7 +57,7 @@ def initialize_baseline(client):
     except Exception:
         pass
 
-    print(f"✅ Baseline initialized with MACD Initial Prices: {len(baseline)} coins")
+    print(f"✅ Baseline initialized with MACD Initial Prices: {len(baseline)} / {total_coins} coins")
     return baseline
 
 def get_percent_change(client, baseline):
