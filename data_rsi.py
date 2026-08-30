@@ -1,4 +1,5 @@
 from collections import deque
+from time import sleep
 from binance.um_futures import UMFutures
 import pandas as pd
 from ta.momentum import RSIIndicator
@@ -15,13 +16,15 @@ def _get_standalone_client():
     return client
 
 
-def get_rsi_data(symbol):
+def get_rsi_data(
+    symbol,
+):  # --- ЗАСВАР: client параметрийг хасаж, дангаар нь ажилладаг болгох ---
     """Нэг зоосны RSI-тай холбоотой бүх мэдээллийг тооцоолж,
 
     нэгдсэн dictionary хэлбэрээр буцаана.
     """
     try:
-        client = _get_standalone_client()
+        client = _get_standalone_client()  # --- ШИНЭ: Client-г дотроо үүсгэнэ ---
         # Бүх тооцоололд хангалттай дата хэрэгтэй тул limit-г 300 болгоно
         klines = client.klines(symbol=symbol, interval="1m", limit=300)
         if not klines or len(klines) < 50:
@@ -54,6 +57,7 @@ def get_rsi_data(symbol):
             "rsi_70_down": [],
         }
 
+        # --- ЗАСВАР: last_status-ийн логикийг хуучин, зөв хэлбэрт нь буцаах ---
         last_status = "None"
         for i in range(len(rsi_series) - 1, 0, -1):
             prev_rsi, curr_rsi = rsi_series.iloc[i - 1], rsi_series.iloc[i]
@@ -69,6 +73,7 @@ def get_rsi_data(symbol):
             if prev_rsi >= 70 and curr_rsi < 70:
                 last_status = "70D"
                 break
+        # --- /ЗАСВАР ---
 
         # --- Trend-ийн логикийг тусад нь тооцоолох ---
         trend_status_history = deque(maxlen=10)
@@ -110,10 +115,12 @@ def get_rsi_data(symbol):
                 elif prev == "50D" and curr == "30D":
                     trend = "downtrand2"
                     break
+        # --- /Trend-ийн логик ---
 
         # 2. Түүхэн огтлолцлын үнийг олох
         for i in range(len(rsi_series) - 2, 2, -1):
             prev_rsi, cur_rsi = rsi_series.iloc[i - 1], rsi_series.iloc[i]
+            # Тухайн огтлолцол болсон лааны орчны нээлтийн үнийг авна
             window_klines = klines[i + offset - 3 : i + offset + 1]
             w_opens = [float(k[1]) for k in window_klines]
             if prev_rsi <= 30 and cur_rsi > 30:
@@ -157,11 +164,11 @@ def get_rsi_data(symbol):
         max_u = max(valid_up) if valid_up else None
         min_d = min(valid_down) if valid_down else None
 
-        result = {
-            "symbol": symbol,
+        # --- Бүх мэдээллийг нэгтгэн буцаах ---
+        return {
             "values": {"0": rsi0, "-1": rsi1, "-2": rsi2, "-3": rsi3},
             "last_status": last_status,
-            "trend": trend,
+            "trend": trend,  # --- ШИНЭ: Тренд нэмэгдсэн ---
             "average_status": average_status,
             "MAXU": max_u,
             "MIND": min_d,
@@ -198,33 +205,37 @@ def get_rsi_data(symbol):
                 "70_down": "DOWN" if (rsi2 >= 70 and rsi1 < 70) else "--",
             },
         }
-
-        # --- ХЭВЛЭХ ХЭСЭГ (Formatted Print) ---
-        print("=" * 50)
-        print(f"📊 RSI DATA REPORT: {symbol}")
-        print("=" * 50)
-        print(f"RSI Values:")
-        print(
-            f"  [0] (Latest): {rsi0:.2f} | [-1]: {rsi1:.2f} | [-2]: {rsi2:.2f} | [-3]: {rsi3:.2f}"
-        )
-        print(f"Status & Trend:")
-        print(f"  Last Status  : {last_status}")
-        print(f"  Trend        : {trend}")
-        print(f"  Average Status: {average_status}")
-        print(f"  MAXU         : {max_u}")
-        print(f"  MIND         : {min_d}")
-        print(f"Cross Now:")
-        for k, v in result["cross_now"].items():
-            print(f"  {k}: {v}")
-        print("=" * 50)
-
-        return result
-
     except Exception as e:
         print(f"🔥 Calculation Error in get_rsi_data for {symbol}: {e}")
         return None
 
+
 if __name__ == "__main__":
-    get_rsi_data("BTCUSDT")
-# Жишээ ажиллуулах хэсэг:
-# get_rsi_data("BTCUSDT")
+    while True:
+        result = get_rsi_data("BTCUSDT")
+        if result:
+            print("=" * 50)
+            print(f"📊 BTCUSDT RSI REPORT")
+            print("=" * 50)
+            print("RSI Values:")
+            for k, v in result["values"].items():
+                print(f"  [{k}] -> {v:.2f}")
+
+            print("\nStatus & Trends:")
+            print(f"  Last Status    : {result['last_status']}")
+            print(f"  Trend          : {result['trend']}")
+            print(f"  Average Status : {result['average_status']}")
+            print(f"  MAXU           : {result['MAXU']}")
+            print(f"  MIND           : {result['MIND']}")
+
+            print("\nCross History Prices:")
+            for k, v in result["cross_history"].items():
+                print(f"  {k} : {v}")
+
+            print("\nCross Now:")
+            for k, v in result["cross_now"].items():
+                print(f"  {k} : {v}")
+            print("=" * 50)
+
+        # 1 секунд хүлээгээд дахин ажиллана (Ctrl + C дарж зогсооно)
+        sleep(1)
