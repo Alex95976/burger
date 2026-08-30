@@ -7,9 +7,9 @@ from data_macd import get_macd # ШИНЭ: test2.py-аас MACD функцийг
 from data_ohlc import get_last_4_ohlc # ШИНЭ: test3.py-аас OHLC функцийг импортлох
 from data_condition import get_trade_conditions # ШИНЭ: test4.py-аас нөхцөл шалгах функцийг импортлох
 
-# ШИНЭ: data_percent2-оос шаардлагатай функц болон клиент авах
+# ШИНЭ: data_percent-оос шаардлагатай функц болон клиент авах
 from client import get_client
-from data_percent2 import initialize_baseline, get_percent_change, get_top_gainers_n, get_top_losers_n
+from data_percent import initialize_baseline, get_percent_change, get_top_gainers_n, get_top_losers_n
 
 # Flask аппликэйшн үүсгэх
 app = Flask(__name__)
