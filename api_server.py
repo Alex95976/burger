@@ -5,9 +5,9 @@ from data_macd import get_macd
 from data_ohlc import get_last_4_ohlc 
 from data_condition import get_trade_conditions 
 
-# ШИНЭ: data_percent2-оос шаардлагатай функц болон клиент авах
-from client2 import get_client
-from data_percent2 import initialize_baseline, get_percent_change, get_top_gainers_n, get_top_losers_n
+# ШИНЭ: data_percent-оос шаардлагатай функц болон клиент авах
+from client import get_client
+from data_percent import initialize_baseline, get_percent_change, get_top_gainers_n, get_top_losers_n
 
 # Flask аппликэйшн үүсгэх
 app = Flask(__name__)
