@@ -4,6 +4,7 @@ from data_rsi import get_rsi_data
 from data_macd import get_macd 
 from data_ohlc import get_last_4_ohlc 
 from data_condition import get_trade_conditions 
+import requests
 
 # ШИНЭ: data_percent-оос шаардлагатай функц болон клиент авах
 from client import get_client
@@ -11,6 +12,14 @@ from data_percent import initialize_baseline, get_percent_change, get_top_gainer
 
 # Flask аппликэйшн үүсгэх
 app = Flask(__name__)
+
+@app.route('/my-ip', methods=['GET'])
+def get_my_ip():
+    try:
+        res = requests.get("https://api.ipify.org?format=json", timeout=5)
+        return res.json()
+    except Exception as e:
+        return {"error": str(e)}
 
 # Сервер асахад Binance client үүсгэж, baseline-ийг автоматаар бэлтгэх
 print("🚀 Flask сервер асахын өмнө Baseline үүсгэж байна...")
